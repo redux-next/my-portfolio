@@ -1,42 +1,32 @@
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Gyanam | Full-Stack Developer",
+  title: 'Gyanam — Developer, building at the edge of the web',
   description:
-    "Gyanam's developer portfolio featuring full-stack web applications, AI-powered projects, and software development work.",
-
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
-  },
-
+    'Portfolio of Gyanam, a full-stack developer exploring the intersection of useful software, AI, and the decentralized web.',
+  applicationName: 'Gyanam Portfolio',
+  keywords: [
+    'Gyanam',
+    'Full-stack developer',
+    'Web3',
+    'Next.js',
+    'AI',
+    'TypeScript',
+  ],
   openGraph: {
-    title: "Gyanam | Full-Stack Developer",
+    title: 'Gyanam — Digital systems, built with intent',
     description:
-      "Explore Gyanam's projects, technical skills, and work in web development and AI.",
-    type: "website",
+      'Full-stack development • AI experiments • Web3 curiosity',
+    type: 'website',
   },
+};
 
-  twitter: {
-    card: "summary",
-    title: "Gyanam | Full-Stack Developer",
-    description:
-      "Explore Gyanam's projects, technical skills, and work in web development and AI.",
-  },
+export const viewport: Viewport = {
+  themeColor: '#080611',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -45,10 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }
