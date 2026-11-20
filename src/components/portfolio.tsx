@@ -11,19 +11,25 @@ import {
   Blocks,
   BookOpen,
   BrainCircuit,
+  Braces,
+  ChevronLeft,
+  ChevronRight,
   Code2,
   Database,
+  Globe,
   Github,
   Instagram,
+  KeyRound,
   Layers3,
   Linkedin,
   Menu,
   ShieldCheck,
+  Smartphone,
   Sparkles,
   Wrench,
   X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const navigation = [
   { label: 'Home', href: '#home' },
@@ -57,56 +63,60 @@ const projects = [
     name: 'AI Study Assistant',
     category: 'AI · EdTech',
     description:
-      'An AI-powered learning workspace with document uploads, summarization, explanations, quizzes, flashcards, and conversational learning.',
-    technologies: ['Next.js', 'Prisma', 'PostgreSQL', 'OpenRouter'],
+      'A study workspace for asking questions, learning from PDFs, and creating summaries, quizzes, and flashcards.',
+    technologies: ['Next.js', 'TypeScript', 'PostgreSQL', 'OpenRouter', 'Prisma'],
     highlights: ['Summaries', 'Explanations', 'Flashcards'],
     icon: BookOpen,
     artwork: 'study',
-    featured: true,
+    githubHref: 'https://github.com/redux-next/ai-study-assistant',
+    liveHref: 'https://ai-study-assistant-seven-beta.vercel.app',
   },
   {
     number: '02',
     name: 'CivicSense AI',
     category: 'Civic tech · AI',
     description:
-      'An AI-powered campus grievance platform featuring complaint analysis, duplicate detection, image uploads, and Assamese and English language support.',
-    technologies: ['Next.js', 'Firebase', 'Generative AI'],
+      'A campus issue-reporting platform with AI-assisted complaint analysis, duplicate detection, maps, and student community features.',
+    technologies: ['Next.js', 'TypeScript', 'Firebase', 'Gemini', 'Leaflet'],
     highlights: ['Complaint analysis', 'Duplicate detection', 'Assamese + English'],
     icon: ShieldCheck,
     artwork: 'civic',
-    featured: false,
+    githubHref: 'https://github.com/redux-next/civicsense-ai',
+    liveHref: 'https://civicsense-ai-steel.vercel.app',
   },
   {
     number: '03',
-    name: 'QuickBite',
-    category: 'Commerce · Logistics',
+    name: 'DailyCart Android',
+    category: 'Android · Mobile commerce',
     description:
-      'A hyperlocal food delivery platform with customer ordering, real-time order tracking, delivery personnel management, and an admin dashboard.',
-    technologies: ['Next.js', 'JavaScript', 'Firebase'],
-    highlights: ['Ordering', 'Live tracking', 'Delivery management'],
+      'A grocery-shopping Android app pairing a WebView experience with native navigation, Firebase authentication, and Google Sign-In.',
+    technologies: ['Kotlin', 'XML', 'Android Studio', 'Firebase Auth', 'WebView'],
+    highlights: ['Google Sign-In', 'Native navigation', 'Location + uploads'],
     icon: Layers3,
-    artwork: 'commerce',
-    featured: false,
+    artwork: 'dailycart',
+    image: '/dailycart-android-preview.png',
+    githubHref: 'https://github.com/redux-next/baskit-android',
   },
   {
     number: '04',
-    name: 'Vybe',
-    category: 'Open source · Music',
-    description: 'An open-source music streaming project.',
-    technologies: [],
-    highlights: ['Open-source', 'Music streaming'],
+    name: 'Palmus Music',
+    category: 'Web · Music',
+    description:
+      'A browser-based music experience with search, streaming, playlists, favorites, and locally stored preferences.',
+    technologies: ['Next.js', 'TypeScript', 'HLS.js', 'Zustand'],
+    highlights: ['Music streaming', 'Playlists', 'Local preferences'],
     icon: AudioLines,
     artwork: 'music',
-    featured: false,
+    githubHref: 'https://github.com/redux-next/Palmus',
   },
 ] as const;
 
 const skillGroups = [
   {
-    title: 'Frontend',
+    title: 'Web frameworks',
     description: 'Interfaces & web experiences',
     icon: Code2,
-    items: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS'],
+    items: ['React', 'Next.js', 'Tailwind CSS'],
   },
   {
     title: 'Backend & data',
@@ -115,18 +125,316 @@ const skillGroups = [
     items: ['Node.js', 'REST APIs', 'Firebase', 'PostgreSQL', 'Prisma'],
   },
   {
-    title: 'Tools & languages',
-    description: 'Everyday building blocks',
-    icon: Wrench,
-    items: ['Git', 'Python'],
+    title: 'Android & mobile',
+    description: 'DailyCart Android app',
+    icon: Smartphone,
+    items: [
+      'Android Studio',
+      'Kotlin',
+      'XML layouts',
+      'Android WebView',
+      'Firebase Authentication',
+      'Google Sign-In',
+    ],
   },
   {
-    title: 'Exploring',
-    description: 'Areas I’m curious about',
-    icon: BrainCircuit,
-    items: ['AI products', 'Web3', 'Security-minded development'],
+    title: 'Tools & exploration',
+    description: 'Workflow & evolving interests',
+    icon: Wrench,
+    items: ['Git', 'AI products', 'Web3', 'Security-minded development'],
   },
 ];
+
+const programmingLanguages = [
+  { name: 'JavaScript', mark: 'JS', tone: 'javascript' },
+  { name: 'TypeScript', mark: 'TS', tone: 'typescript' },
+  { name: 'Python', mark: 'Py', tone: 'python' },
+  { name: 'Kotlin', mark: 'Kt', tone: 'kotlin' },
+  { name: 'HTML', mark: '</>', tone: 'html' },
+  { name: 'CSS', mark: '#', tone: 'css' },
+];
+
+const androidTechnologies = [
+  { label: 'Android Studio', icon: Code2 },
+  { label: 'Kotlin', icon: Braces },
+  { label: 'XML layouts', icon: Layers3 },
+  { label: 'Android WebView', icon: Globe },
+  { label: 'Firebase Authentication', icon: ShieldCheck },
+  { label: 'Google Sign-In', icon: KeyRound },
+];
+
+function ProjectCarousel({
+  reduceMotion,
+}: {
+  reduceMotion: boolean | null;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({
+    active: false,
+    moved: false,
+    startX: 0,
+    startScrollLeft: 0,
+  });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const scrollToProject = (index: number) => {
+    const track = trackRef.current;
+    const card = track?.children.item(index);
+    if (!track || !(card instanceof HTMLElement)) return;
+
+    const left =
+      card.getBoundingClientRect().left -
+      track.getBoundingClientRect().left +
+      track.scrollLeft;
+
+    track.scrollTo({
+      left,
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  };
+
+  const updateActiveProject = () => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const cards = Array.from(track.children);
+    const trackLeft = track.getBoundingClientRect().left;
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    cards.forEach((card, index) => {
+      const distance = Math.abs(
+        card.getBoundingClientRect().left - trackLeft
+      );
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    setActiveIndex(nearestIndex);
+  };
+
+  const currentProject = String(activeIndex + 1).padStart(2, '0');
+  const totalProjects = String(projects.length).padStart(2, '0');
+
+  return (
+    <div className="project-carousel">
+      <div
+        className={`project-carousel-track${isDragging ? ' is-dragging' : ''}`}
+        ref={trackRef}
+        role="region"
+        aria-label="Selected projects"
+        aria-roledescription="carousel"
+        tabIndex={0}
+        onScroll={updateActiveProject}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === 'ArrowLeft' && activeIndex > 0) {
+            event.preventDefault();
+            scrollToProject(activeIndex - 1);
+          }
+          if (event.key === 'ArrowRight' && activeIndex < projects.length - 1) {
+            event.preventDefault();
+            scrollToProject(activeIndex + 1);
+          }
+        }}
+        onPointerDown={(event) => {
+          if (event.pointerType !== 'mouse' || event.button !== 0) return;
+          if (
+            event.target instanceof Element &&
+            event.target.closest('a, button')
+          ) {
+            return;
+          }
+          dragState.current = {
+            active: true,
+            moved: false,
+            startX: event.clientX,
+            startScrollLeft: event.currentTarget.scrollLeft,
+          };
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setIsDragging(true);
+        }}
+        onPointerMove={(event) => {
+          if (!dragState.current.active) return;
+          const delta = event.clientX - dragState.current.startX;
+          if (Math.abs(delta) > 4) dragState.current.moved = true;
+          if (dragState.current.moved) {
+            event.preventDefault();
+            event.currentTarget.scrollLeft =
+              dragState.current.startScrollLeft - delta;
+          }
+        }}
+        onPointerUp={() => {
+          dragState.current.active = false;
+          setIsDragging(false);
+          if (dragState.current.moved) {
+            window.setTimeout(() => {
+              dragState.current.moved = false;
+            }, 0);
+          }
+        }}
+        onPointerCancel={() => {
+          dragState.current.active = false;
+          dragState.current.moved = false;
+          setIsDragging(false);
+        }}
+        onClickCapture={(event) => {
+          if (!dragState.current.moved) return;
+          event.preventDefault();
+          event.stopPropagation();
+          dragState.current.moved = false;
+        }}
+      >
+        {projects.map((project, index) => {
+          const Icon = project.icon;
+          const image = 'image' in project ? project.image : null;
+          return (
+            <motion.article
+              className="project-card"
+              key={project.number}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${projects.length}: ${project.name}`}
+              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.45,
+                delay: reduceMotion ? 0 : index * 0.06,
+              }}
+            >
+              <div
+                className={`project-art project-art--${project.artwork}`}
+                aria-hidden={image ? undefined : true}
+              >
+                {image ? (
+                  <>
+                    <Image
+                      className="project-art-image"
+                      src={image}
+                      alt={`${project.name} preview from its Android repository`}
+                      width={780}
+                      height={1250}
+                      sizes="(max-width: 760px) 85vw, 45vw"
+                      draggable={false}
+                    />
+                    <span className="project-image-label">DAILYCART / ANDROID</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="art-orbit art-orbit--one" />
+                    <div className="art-orbit art-orbit--two" />
+                    <div className="art-symbol">
+                      <Icon size={34} strokeWidth={1.4} />
+                    </div>
+                    <span className="art-index">PROJECT / {project.number}</span>
+                    <div className="art-highlights">
+                      {project.highlights.map((highlight) => (
+                        <span key={highlight}>{highlight}</span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="project-info">
+                <div className="project-meta">
+                  <span>{project.category}</span>
+                  <span>/{project.number}</span>
+                </div>
+                <h3>{project.name}</h3>
+                <p className="project-description">{project.description}</p>
+                <ul className="project-tags" aria-label="Technologies">
+                  {project.technologies.map((technology) => (
+                    <li key={technology}>{technology}</li>
+                  ))}
+                </ul>
+                <div className="project-actions">
+                  <a
+                    className="project-link"
+                    href={project.githubHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`View ${project.name} on GitHub (opens in a new tab)`}
+                  >
+                    GitHub <ArrowUpRight aria-hidden="true" size={15} />
+                  </a>
+                  {'liveHref' in project && project.liveHref && (
+                    <a
+                      className="project-link project-link--secondary"
+                      href={project.liveHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Visit the ${project.name} live demo (opens in a new tab)`}
+                    >
+                      Live demo <ArrowUpRight aria-hidden="true" size={15} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
+
+      <div className="project-carousel-controls">
+        <div className="project-carousel-status">
+          <p
+            className="project-counter"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <span>{currentProject}</span>
+            <span aria-hidden="true">/</span>
+            <span>{totalProjects}</span>
+          </p>
+          <div
+            className="project-pagination"
+            role="group"
+            aria-label="Choose a project"
+          >
+            {projects.map((project, index) => (
+              <button
+                className={
+                  activeIndex === index
+                    ? 'project-pagination-dot is-active'
+                    : 'project-pagination-dot'
+                }
+                key={project.number}
+                type="button"
+                aria-label={`Show project ${index + 1}: ${project.name}`}
+                aria-current={activeIndex === index ? 'true' : undefined}
+                onClick={() => scrollToProject(index)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="project-carousel-arrows">
+          <button
+            type="button"
+            className="carousel-arrow"
+            aria-label="Previous project"
+            disabled={activeIndex === 0}
+            onClick={() => scrollToProject(activeIndex - 1)}
+          >
+            <ChevronLeft aria-hidden="true" size={18} />
+          </button>
+          <button
+            type="button"
+            className="carousel-arrow"
+            aria-label="Next project"
+            disabled={activeIndex === projects.length - 1}
+            onClick={() => scrollToProject(activeIndex + 1)}
+          >
+            <ChevronRight aria-hidden="true" size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function SectionHeading({
   index,
@@ -167,33 +475,6 @@ function SocialLinks({ compact = false }: { compact?: boolean }) {
           {!compact && <ArrowUpRight aria-hidden="true" size={13} />}
         </a>
       ))}
-    </div>
-  );
-}
-
-function ProjectArtwork({
-  project,
-}: {
-  project: (typeof projects)[number];
-}) {
-  const Icon = project.icon;
-
-  return (
-    <div
-      className={`project-art project-art--${project.artwork}`}
-      aria-hidden="true"
-    >
-      <div className="art-orbit art-orbit--one" />
-      <div className="art-orbit art-orbit--two" />
-      <div className="art-symbol">
-        <Icon size={34} strokeWidth={1.4} />
-      </div>
-      <span className="art-index">PROJECT / {project.number}</span>
-      <div className="art-highlights">
-        {project.highlights.map((highlight) => (
-          <span key={highlight}>{highlight}</span>
-        ))}
-      </div>
     </div>
   );
 }
@@ -505,7 +786,81 @@ export default function Portfolio() {
                 </motion.article>
               ))}
             </div>
+
+            <motion.div className="language-section" {...reveal}>
+              <div className="language-heading">
+                <p className="eyebrow">
+                  <span>LANGUAGES</span> / In my projects
+                </p>
+                <h3>Programming languages.</h3>
+              </div>
+              <ul className="language-grid" aria-label="Programming languages">
+                {programmingLanguages.map(({ name, mark, tone }) => (
+                  <li className="language-card" key={name}>
+                    <span
+                      className={`language-mark language-mark--${tone}`}
+                      aria-hidden="true"
+                    >
+                      {mark}
+                    </span>
+                    <span>{name}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
           </div>
+        </section>
+
+        <section
+          id="mobile-development"
+          className="mobile-development-section section-shell section-space"
+        >
+          <motion.div className="mobile-development-panel" {...reveal}>
+            <div className="mobile-development-copy">
+              <p className="eyebrow">
+                <span>ANDROID</span> / Mobile development
+              </p>
+              <h2>Built for the small screen.</h2>
+              <p className="mobile-development-description">
+                DailyCart’s Android app uses a native Kotlin and XML
+                interface with a WebView architecture, Firebase
+                Authentication, Google Sign-In, and native navigation.
+              </p>
+              <ul className="android-technology-grid">
+                {androidTechnologies.map(({ label, icon: Icon }) => (
+                  <li key={label}>
+                    <span className="android-technology-icon">
+                      <Icon aria-hidden="true" size={16} />
+                    </span>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+              <a className="text-link" href="#projects">
+                See the DailyCart project <ArrowUpRight aria-hidden="true" size={15} />
+              </a>
+            </div>
+
+            <div className="android-device-stage">
+              <div className="device-glow" aria-hidden="true" />
+              <div
+                className="android-device"
+                role="img"
+                aria-label="DailyCart Android app shown inside a phone frame"
+              >
+                <div className="android-device-screen">
+                  <Image
+                    src="/dailycart-android-preview.png"
+                    alt=""
+                    fill
+                    sizes="(max-width: 760px) 48vw, 240px"
+                    style={{ objectFit: 'cover', objectPosition: '78% center' }}
+                  />
+                </div>
+              </div>
+              <p className="device-caption">DAILYCART / ANDROID APP</p>
+            </div>
+          </motion.div>
         </section>
 
         <section id="projects" className="projects-section section-shell section-space">
@@ -513,8 +868,8 @@ export default function Portfolio() {
             <SectionHeading
               index="03"
               label="Selected builds"
-              title="Ideas, meet implementation."
-              description="A few products I’m building and experimenting with—each one a chance to learn by shipping something real."
+              title="Projects, in motion."
+              description="A closer look at products built across learning, civic tech, mobile, and music."
             />
             <a
               className="text-link projects-github-link"
@@ -526,58 +881,10 @@ export default function Portfolio() {
             </a>
           </motion.div>
 
-          <div className="project-grid">
-            {projects.map((project, index) => {
-              const staggeredReveal = reduceMotion
-                ? reveal
-                : {
-                    ...reveal,
-                    transition: {
-                      ...reveal.transition,
-                      delay: index * 0.08,
-                    },
-                  };
-
-              return (
-                <motion.article
-                  className={
-                    project.featured
-                      ? 'project-card project-card--featured'
-                      : 'project-card'
-                  }
-                  key={project.number}
-                  {...staggeredReveal}
-                >
-                  <ProjectArtwork project={project} />
-                  <div className="project-info">
-                    <div className="project-meta">
-                      <span>{project.category}</span>
-                      <span>/{project.number}</span>
-                    </div>
-                    <h3>{project.name}</h3>
-                    <p className="project-description">{project.description}</p>
-                    <ul className="project-tags" aria-label="Technologies">
-                      {project.technologies.map((technology) => (
-                        <li key={technology}>{technology}</li>
-                      ))}
-                    </ul>
-                    <a
-                      className="project-link"
-                      href="https://github.com/redux-next"
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Visit Gyanam’s GitHub profile for ${project.name} (opens in a new tab)`}
-                    >
-                      Browse GitHub <ArrowUpRight aria-hidden="true" size={15} />
-                    </a>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
+          <ProjectCarousel reduceMotion={reduceMotion} />
           <p className="project-note">
-            The links above open my GitHub profile; individual repositories
-            aren’t linked yet.
+            Artwork is illustrative; the DailyCart Android preview is from its
+            project repository.
           </p>
         </section>
 

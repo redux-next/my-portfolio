@@ -32,8 +32,14 @@ selected projects.
 -   **Responsive layout** --- designed to adapt across screen sizes.
 -   **Reduced-motion awareness** --- animations respect the visitor's
     motion preference.
--   **Project showcase** --- highlights selected work without fabricated
-    user counts, usage statistics, or achievements.
+-   **Android development** --- a dedicated mobile section grounded in the
+    DailyCart Android project.
+-   **Programming languages** --- JavaScript, TypeScript, Python, Kotlin,
+    HTML, and CSS, separated from frameworks and tools.
+-   **Swipeable project carousel** --- touch scrolling, mouse dragging,
+    keyboard navigation, pagination, and previous/next controls.
+-   **Project showcase** --- links directly to the featured repositories
+    and verified live demos without fabricated user counts or achievements.
 -   **Search metadata** --- descriptive page and Open Graph metadata.
 -   **Gyanam monogram** --- a violet-on-charcoal "G" with ICO, browser,
     and Apple home-screen variants.
@@ -54,19 +60,29 @@ selected projects.
   [Framer Motion](https://motion.dev/)            Animations and transitions
 
   [Lucide React](https://lucide.dev/)             Interface icons
+
+  Kotlin                                          Android application development
   -----------------------------------------------------------------------------------
 
 ## 🗂️ Featured Projects
 
-The portfolio currently highlights these projects:
+The portfolio highlights projects with direct repository links:
 
--   **AI Study Assistant** --- a study-focused application.
--   **CivicSense AI** --- an AI-powered campus grievance platform.
--   **QuickBite** --- a hyperlocal food delivery web application.
--   **Vybe** --- an open-source music streaming project.
+-   **AI Study Assistant** --- AI-assisted learning, PDF study tools, quizzes,
+    and flashcards. [Repository](https://github.com/redux-next/ai-study-assistant)
+    · [Live demo](https://ai-study-assistant-seven-beta.vercel.app)
+-   **CivicSense AI** --- campus issue reporting, AI-assisted complaint
+    analysis, and community tools.
+    [Repository](https://github.com/redux-next/civicsense-ai)
+    · [Live demo](https://civicsense-ai-steel.vercel.app)
+-   **DailyCart Android** --- a Kotlin/XML Android app with WebView,
+    Firebase Authentication, and Google Sign-In.
+    [Repository](https://github.com/redux-next/baskit-android)
+-   **Palmus Music** --- browser-based music streaming and playlist features.
+    [Repository](https://github.com/redux-next/Palmus)
 
-Individual project repositories are not linked yet; project links open
-Gyanam's GitHub profile.
+The DailyCart preview is included from its Android repository. Other project
+visuals are original illustrations, not screenshots.
 
 ## 🖥️ Run Locally
 
