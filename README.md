@@ -1,10 +1,10 @@
 ::: {align="center"}
-# ✦ Gyanam --- Cosmic Developer Portfolio
+# Gyanam — Developer Portfolio
 
-**Full-stack developer · Building for the web, one idea at a time.**
+**Full-stack developer · Building thoughtful digital products.**
 
-A futuristic portfolio with a purple cosmic atmosphere, smooth motion,
-and a custom glowing cursor.
+A dark, editorial portfolio with a restrained chartreuse accent, subtle
+motion, and Gyanam's own optimized profile photograph.
 
 [GitHub Profile](https://github.com/redux-next)
 :::
@@ -13,28 +13,30 @@ and a custom glowing cursor.
 
 ## ✨ About
 
-This is a personal developer portfolio designed around a deep-space
-visual identity: dark backgrounds, violet and lavender glow, orbital
-details, and animated interface elements.
+This is a personal developer portfolio built around a dark, minimalist
+visual identity, considered typography, and a responsive layout.
 
-The site presents Gyanam's development work and provides a central place
-to explore selected projects.
+The site presents Gyanam's development interests, technologies, and
+selected projects.
 
 ## 🚀 Highlights
 
--   **Cosmic visual theme** --- deep indigo backgrounds with purple and
-    lavender accents.
--   **Motion effects** --- animated interface elements powered by Framer
-    Motion.
--   **Custom cursor** --- glowing dot, trailing ring, and hover feedback
-    on supported desktop pointers.
+-   **Editorial dark theme** --- charcoal surfaces with a restrained
+    chartreuse accent.
+-   **Purposeful motion** --- section reveals and menu transitions
+    powered by Framer Motion.
+-   **Personal portrait** --- the supplied photograph, optimized for web
+    delivery with Next.js Image.
+-   **Responsive navigation** --- section links, active-state feedback,
+    and a mobile menu.
 -   **Responsive layout** --- designed to adapt across screen sizes.
--   **Reduced-motion awareness** --- custom cursor effects are disabled
-    when reduced motion is requested.
+-   **Reduced-motion awareness** --- animations respect the visitor's
+    motion preference.
 -   **Project showcase** --- highlights selected work without fabricated
     user counts, usage statistics, or achievements.
--   **Custom favicon assets** --- matching cosmic "G" icon for browser
-    and Apple device tabs.
+-   **Search metadata** --- descriptive page and Open Graph metadata.
+-   **Gyanam monogram** --- a violet-on-charcoal "G" with ICO, browser,
+    and Apple home-screen variants.
 
 ## 🧰 Tech Stack
 
@@ -59,11 +61,12 @@ to explore selected projects.
 The portfolio currently highlights these projects:
 
 -   **AI Study Assistant** --- a study-focused application.
--   **Vybe** --- an open-source music streaming project.
+-   **CivicSense AI** --- an AI-powered campus grievance platform.
 -   **QuickBite** --- a hyperlocal food delivery web application.
--   **Cosmic Portfolio** --- this personal portfolio.
+-   **Vybe** --- an open-source music streaming project.
 
-Project features and status may evolve as development continues.
+Individual project repositories are not linked yet; project links open
+Gyanam's GitHub profile.
 
 ## 🖥️ Run Locally
 
@@ -114,25 +117,19 @@ dependencies or type errors, resolve those before deploying.
 
 -   **Portfolio content:** update the portfolio component in
     `src/components/portfolio.tsx`.
--   **Global styling:** edit `src/app/globals.css`.
--   **Custom cursor:** edit `src/components/cosmic-cursor.tsx`.
--   **App metadata:** check `src/app/layout.tsx`.
--   **Favicon:** place Next.js App Router icon files in `src/app/`, such
-    as `icon.png` and `apple-icon.png`.
-
-Your exact file structure may differ slightly depending on the version
-of the project you have checked out.
+-   **Global styling:** edit `app/globals.css`.
+-   **App metadata:** edit `app/layout.tsx`.
+-   **Profile photograph:** replace `public/gyanam-portrait.jpg` to
+    change the image in the hero.
+-   **Brand mark:** edit `public/gyanam-monogram.svg`; generated browser
+    and Apple icons live in `app/`.
 
 ## ♿ Accessibility Notes
 
--   The custom cursor is decorative and marked as hidden from assistive
-    technologies.
--   It is intended for fine-pointer devices; touch devices keep their
-    native interaction.
--   Reduced-motion preferences are respected by disabling the custom
-    cursor effect.
--   Keep text contrast, keyboard focus indicators, and semantic HTML in
-    mind when adding new components.
+-   Navigation and controls are keyboard accessible and have visible
+    focus indicators.
+-   The mobile menu can be dismissed with the Escape key.
+-   Reduced-motion preferences are respected by the motion effects.
 
 ## 📌 Project Principles
 

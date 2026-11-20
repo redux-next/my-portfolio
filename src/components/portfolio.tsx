@@ -1,659 +1,628 @@
-
 'use client';
 
-import { useState } from 'react';
-import CosmicCursor from './cosmic-cursor';
-import CosmicScene from './cosmic-scene';
-import { motion, useReducedMotion } from 'framer-motion';
+import Image from 'next/image';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowDownRight,
   ArrowRight,
+  ArrowUp,
   ArrowUpRight,
   AudioLines,
   Blocks,
-  Bot,
-  Check,
+  BookOpen,
+  BrainCircuit,
   Code2,
-  Command,
+  Database,
   Github,
-  Globe2,
+  Instagram,
   Layers3,
-  Mail,
+  Linkedin,
   Menu,
-  Orbit,
   ShieldCheck,
   Sparkles,
+  Wrench,
   X,
-  Zap,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+const navigation = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Contact', href: '#contact' },
+];
+
+const socials = [
+  {
+    label: 'GitHub',
+    href: 'https://github.com/redux-next',
+    icon: Github,
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/gyanam-gogoi-0b9ab720a/',
+    icon: Linkedin,
+  },
+  {
+    label: 'Instagram',
+    href: 'https://www.instagram.com/_ryaan__29/',
+    icon: Instagram,
+  },
+];
 
 const projects = [
   {
-    id: '01',
+    number: '01',
     name: 'AI Study Assistant',
-    type: 'AI · EdTech',
+    category: 'AI · EdTech',
     description:
       'An AI-powered learning workspace with document uploads, summarization, explanations, quizzes, flashcards, and conversational learning.',
-    tags: ['Next.js', 'Prisma', 'PostgreSQL', 'OpenRouter'],
-    icon: Bot,
-    glow: 'rgba(139,92,246,.24)',
-    status: 'In development',
-    href: 'https://github.com/redux-next',
+    technologies: ['Next.js', 'Prisma', 'PostgreSQL', 'OpenRouter'],
+    highlights: ['Summaries', 'Explanations', 'Flashcards'],
+    icon: BookOpen,
+    artwork: 'study',
+    featured: true,
   },
   {
-    id: '02',
+    number: '02',
     name: 'CivicSense AI',
-    type: 'Civic Tech · AI',
+    category: 'Civic tech · AI',
     description:
       'An AI-powered campus grievance platform featuring complaint analysis, duplicate detection, image uploads, and Assamese and English language support.',
-    tags: ['Next.js', 'Firebase', 'Generative AI', 'AI Analysis'],
+    technologies: ['Next.js', 'Firebase', 'Generative AI'],
+    highlights: ['Complaint analysis', 'Duplicate detection', 'Assamese + English'],
     icon: ShieldCheck,
-    glow: 'rgba(16,185,129,.22)',
-    status: 'Built',
-    href: 'https://github.com/redux-next',
+    artwork: 'civic',
+    featured: false,
   },
   {
-    id: '03',
+    number: '03',
     name: 'QuickBite',
-    type: 'Commerce · Logistics',
+    category: 'Commerce · Logistics',
     description:
       'A hyperlocal food delivery platform with customer ordering, real-time order tracking, delivery personnel management, and an admin dashboard.',
-    tags: ['Next.js', 'JavaScript', 'Firebase'],
-    icon: Zap,
-    glow: 'rgba(99,102,241,.22)',
-    status: 'Building',
-    href: 'https://github.com/redux-next',
+    technologies: ['Next.js', 'JavaScript', 'Firebase'],
+    highlights: ['Ordering', 'Live tracking', 'Delivery management'],
+    icon: Layers3,
+    artwork: 'commerce',
+    featured: false,
   },
-];
-
-
-const capabilities = [
   {
+    number: '04',
+    name: 'Vybe',
+    category: 'Open source · Music',
+    description: 'An open-source music streaming project.',
+    technologies: [],
+    highlights: ['Open-source', 'Music streaming'],
+    icon: AudioLines,
+    artwork: 'music',
+    featured: false,
+  },
+] as const;
+
+const skillGroups = [
+  {
+    title: 'Frontend',
+    description: 'Interfaces & web experiences',
     icon: Code2,
-    title: 'Full-stack engineering',
-    text: 'From polished interfaces to APIs, data models, authentication, and deployment.',
+    items: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS'],
   },
   {
-    icon: Bot,
-    title: 'AI-powered products',
-    text: 'Practical AI integrations that make products more useful, not just more futuristic.',
+    title: 'Backend & data',
+    description: 'Services, storage & integrations',
+    icon: Database,
+    items: ['Node.js', 'REST APIs', 'Firebase', 'PostgreSQL', 'Prisma'],
   },
   {
-    icon: Blocks,
-    title: 'Web3 & on-chain systems',
-    text: 'Exploring wallets, smart contracts, decentralized applications, and developer tooling.',
+    title: 'Tools & languages',
+    description: 'Everyday building blocks',
+    icon: Wrench,
+    items: ['Git', 'Python'],
   },
   {
-    icon: ShieldCheck,
-    title: 'Security-minded thinking',
-    text: 'Building with attention to validation, access control, and safe-by-default workflows.',
+    title: 'Exploring',
+    description: 'Areas I’m curious about',
+    icon: BrainCircuit,
+    items: ['AI products', 'Web3', 'Security-minded development'],
   },
-];
-
-const stack = [
-  'TypeScript',
-  'JavaScript',
-  'Python',
-  'React',
-  'Next.js',
-  'Node.js',
-  'Tailwind CSS',
-  'Firebase',
-  'PostgreSQL',
-  'Prisma',
-  'Git',
-  'REST APIs',
 ];
 
 function SectionHeading({
+  index,
   label,
   title,
-  detail,
+  description,
 }: {
+  index: string;
   label: string;
   title: string;
-  detail?: string;
+  description: string;
 }) {
   return (
-    <div className="mb-10 max-w-2xl">
-      <div className="eyebrow mb-4">{label}</div>
-      <h2 className="section-title">{title}</h2>
-      {detail && (
-        <p className="mt-4 max-w-xl text-sm leading-7 text-[#a9a1c0] sm:text-base">
-          {detail}
-        </p>
-      )}
+    <div className="section-heading">
+      <p className="eyebrow">
+        <span>{index}</span> / {label}
+      </p>
+      <h2>{title}</h2>
+      <p className="section-description">{description}</p>
+    </div>
+  );
+}
+
+function SocialLinks({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={compact ? 'social-links social-links--compact' : 'social-links'}>
+      {socials.map(({ label, href, icon: Icon }) => (
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${label} profile (opens in a new tab)`}
+          title={label}
+        >
+          <Icon aria-hidden="true" size={compact ? 17 : 16} />
+          {!compact && <span>{label}</span>}
+          {!compact && <ArrowUpRight aria-hidden="true" size={13} />}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function ProjectArtwork({
+  project,
+}: {
+  project: (typeof projects)[number];
+}) {
+  const Icon = project.icon;
+
+  return (
+    <div
+      className={`project-art project-art--${project.artwork}`}
+      aria-hidden="true"
+    >
+      <div className="art-orbit art-orbit--one" />
+      <div className="art-orbit art-orbit--two" />
+      <div className="art-symbol">
+        <Icon size={34} strokeWidth={1.4} />
+      </div>
+      <span className="art-index">PROJECT / {project.number}</span>
+      <div className="art-highlights">
+        {project.highlights.map((highlight) => (
+          <span key={highlight}>{highlight}</span>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-
+  const [activeSection, setActiveSection] = useState('home');
   const reduceMotion = useReducedMotion();
 
-  const reveal = {
-    initial: { opacity: 0, y: reduceMotion ? 0 : 22 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.15 },
-    transition: { duration: reduceMotion ? 0 : 0.6 },
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSections = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (first, second) =>
+              first.boundingClientRect.top - second.boundingClientRect.top
+          );
+        const visibleSection = visibleSections[0];
 
-  const email = 'hello@gyanam.dev';
+        if (visibleSection) setActiveSection(visibleSection.target.id);
+      },
+      { rootMargin: '-25% 0px -65% 0px' }
+    );
 
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      window.location.href = `mailto:${email}`;
-    }
-  };
+    navigation.forEach(({ href }) => {
+      const section = document.querySelector(href);
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
+
+  const reveal = reduceMotion
+    ? { initial: false as const }
+    : {
+        initial: { opacity: 0, y: 20 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.15 },
+        transition: { duration: 0.55, ease: 'easeOut' as const },
+      };
 
   const closeMenu = () => setMenuOpen(false);
 
   return (
     <>
-      <CosmicCursor />
-
-      <div className="cosmos">
-        <div className="star-drift absolute inset-0" />
-        <div className="grid-bg absolute inset-0" />
-        <div className="orb left-[8%] top-[18%] h-2 w-2 bg-violet-300/70 shadow-[0_0_22px_6px_rgba(167,139,250,.18)]" />
-        <div className="orb right-[12%] top-[35%] h-1.5 w-1.5 bg-fuchsia-200/80 shadow-[0_0_20px_5px_rgba(232,121,249,.22)]" />
-      </div>
-
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[.06] bg-[#080611]/75 backdrop-blur-xl">
-        <nav
-          className="section-wrap flex h-[72px] items-center justify-between"
-          aria-label="Main navigation"
-        >
+      <header className="site-header">
+        <nav className="nav-shell" aria-label="Main navigation">
           <a
             href="#home"
-            className="group flex items-center gap-3"
+            className="wordmark"
             onClick={closeMenu}
-            aria-label="Gyanam home"
+            aria-label="Gyanam — home"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-violet-300/25 bg-violet-400/10 text-violet-200 transition group-hover:bg-violet-400/20">
-              <Orbit size={19} />
-            </span>
-            <span className="text-sm font-extrabold tracking-tight">
-              gyanam<span className="text-violet-300">.dev</span>
-            </span>
+            gyanam<span>.</span>
           </a>
 
-          <div className="hidden items-center gap-8 md:flex">
-            {[
-              ['Work', '#work'],
-              ['About', '#about'],
-              ['Stack', '#stack'],
-            ].map(([label, href]) => (
+          <div className="desktop-nav">
+            {navigation.map(({ label, href }) => (
               <a
-                key={label}
+                key={href}
                 href={href}
-                className="text-xs text-[#b8b0cd] transition hover:text-white"
+                className={activeSection === href.slice(1) ? 'nav-link is-active' : 'nav-link'}
+                aria-current={activeSection === href.slice(1) ? 'location' : undefined}
               >
                 {label}
               </a>
             ))}
-
-            <a
-              href="#contact"
-className="group inline-flex items-center gap-2 rounded-full border border-violet-300/25 bg-gradient-to-r from-violet-400/15 to-fuchsia-400/10 px-5 py-2.5 text-xs font-semibold text-violet-100 shadow-[0_0_20px_rgba(139,92,246,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200/50 hover:from-violet-400/25 hover:to-fuchsia-400/20 hover:shadow-[0_0_28px_rgba(139,92,246,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300">
-              Let’s connect <ArrowUpRight className="ml-1 inline" size={13} />
-            </a>
           </div>
 
+          <a className="nav-cta" href="#contact">
+            Let’s talk <ArrowUpRight aria-hidden="true" size={14} />
+          </a>
+
           <button
-            className="rounded-lg border border-white/10 p-2 text-white md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={
-              menuOpen ? 'Close navigation menu' : 'Open navigation menu'
-            }
+            className="menu-toggle"
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
-            {menuOpen ? <X size={19} /> : <Menu size={19} />}
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
 
-        {menuOpen && (
-          <div className="border-t border-white/10 bg-[#0b0817] px-5 py-4 md:hidden">
-            {[
-              ['Work', '#work'],
-              ['About', '#about'],
-              ['Stack', '#stack'],
-              ['Contact', '#contact'],
-            ].map(([label, href]) => (
-              <a
-                key={label}
-                href={href}
-                onClick={closeMenu}
-                className="block rounded-lg px-3 py-3 text-sm text-[#d7d0e8] hover:bg-white/5"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
-        )}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              id="mobile-navigation"
+              className="mobile-nav"
+              initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.2 }}
+            >
+              {navigation.map(({ label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={closeMenu}
+                  aria-current={activeSection === href.slice(1) ? 'location' : undefined}
+                >
+                  {label}
+                  <ArrowUpRight aria-hidden="true" size={15} />
+                </a>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      <main id="home">
-        {/* HERO */}
-        <section className="section-wrap relative flex min-h-[790px] flex-col justify-center pb-20 pt-36 sm:min-h-[850px] sm:pt-40">
-          {/* Actual interactive Three.js planet */}
-          <div className="pointer-events-auto absolute right-[4%] top-[23%] hidden h-[360px] w-[360px] items-center justify-center md:flex">
-            <CosmicScene />
-
-            <div className="pointer-events-none absolute bottom-[-4px] right-[-8px] rounded-full border border-white/10 bg-[#100b20]/90 px-3 py-2 font-mono text-[9px] tracking-widest text-violet-200/70">
-              FIG. 001 / THE BUILDER
-            </div>
-          </div>
-
+      <main>
+        <section id="home" className="hero section-shell">
           <motion.div
-            initial={{ opacity: 0, y: reduceMotion ? 0 : 18 }}
+            className="hero-copy"
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.65 }}
-            className="relative z-10 max-w-[740px]"
+            transition={{ duration: reduceMotion ? 0 : 0.65, ease: 'easeOut' }}
           >
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[.07] px-3.5 py-2">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-50" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
-              </span>
-
-              <span className="font-mono text-[10px] tracking-[.12em] text-[#d6c9f4]">
-                INDEPENDENT DEVELOPER{' '}
-                <span className="mx-1 text-violet-400">/</span> ALWAYS BUILDING
-              </span>
-            </div>
-
-            <div className="eyebrow mb-5 flex items-center gap-2">
-              <Sparkles size={13} /> A little curiosity. A lot of code.
-            </div>
-
-            <h1 className="text-[clamp(3.3rem,9vw,7.2rem)] font-extrabold leading-[.94] tracking-[-.085em]">
-              Building the
+            <p className="eyebrow hero-eyebrow">
+              <span className="status-dot" aria-hidden="true" />
+              Full-stack development · AI · Web
+            </p>
+            <h1>
+              Hey, I’m
               <br />
-              <span className="gradient-text">next layer</span>
-              <span className="text-violet-300">.</span>
+              <span>Gyanam.</span>
             </h1>
-
-            <p className="mt-7 max-w-[530px] text-base leading-8 text-[#b6aecb] sm:text-lg">
-              Hey, I’m <span className="font-semibold text-white">Gyanam</span>{' '}
-              — a full-stack developer turning ambitious ideas into useful
-              digital products. Currently exploring the overlap of{' '}
-              <span className="text-violet-200">
-                AI, modern web, and Web3.
-              </span>
+            <p className="hero-statement">
+              I build <span>thoughtful digital products</span> for the real
+              world.
+            </p>
+            <p className="hero-description">
+              Full-stack developer exploring modern web, AI, and Web3—bringing
+              ideas to life with useful software and care for the details.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <a
-                href="#work"
-className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-200 via-violet-100 to-fuchsia-100 px-6 py-3.5 text-sm font-bold text-[#160d25] shadow-[0_5px_25px_rgba(167,139,250,0.18)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(167,139,250,0.3)] active:translate-y-0 active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080611]">
-                Explore my work
-                <ArrowDownRight
-                  size={16}
-                  className="transition group-hover:translate-x-0.5 group-hover:translate-y-0.5"
-                />
+            <div className="hero-actions">
+              <a className="button button--primary" href="#projects">
+                Explore my work <ArrowDownRight aria-hidden="true" size={17} />
               </a>
-
-              <a
-                href="https://github.com/redux-next"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.035] px-5 py-3.5 text-sm font-semibold text-white transition hover:border-violet-200/30 hover:bg-white/[.07]"
-              >
-                <Github size={16} /> GitHub <ArrowUpRight size={13} />
+              <a className="button button--secondary" href="#contact">
+                Let’s connect <ArrowRight aria-hidden="true" size={16} />
               </a>
             </div>
 
-            <div className="mt-14 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-[#8f87a6]">
-              <span className="font-mono text-[10px] tracking-widest text-[#c3b6df]">
-                CURRENT INTERESTS
-              </span>
+            <SocialLinks />
+          </motion.div>
 
-              <span className="hidden h-4 w-px bg-white/10 sm:block" />
-
-              <span className="flex items-center gap-2">
-                <Bot size={14} className="text-violet-300" /> AI products
-              </span>
-
-              <span className="flex items-center gap-2">
-                <Globe2 size={14} className="text-violet-300" /> Open web
-              </span>
-
-              <span className="flex items-center gap-2">
-                <Blocks size={14} className="text-violet-300" /> Web3 systems
-              </span>
+          <motion.div
+            className="hero-portrait"
+            initial={reduceMotion ? false : { opacity: 0, y: 14, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: reduceMotion ? 0 : 0.75, delay: 0.12 }}
+          >
+            <div className="portrait-frame">
+              <Image
+                src="/gyanam-portrait.jpg"
+                alt="Gyanam in a light sweatshirt, holding headphones."
+                width={1400}
+                height={1050}
+                quality={85}
+                sizes="(max-width: 760px) 84vw, (max-width: 1100px) 40vw, 430px"
+              />
+              <div className="portrait-caption">
+                <span>GYANAM</span>
+                <span>DEVELOPER / BUILDER</span>
+              </div>
+            </div>
+            <div className="portrait-note">
+              <Sparkles aria-hidden="true" size={15} />
+              <span>Learning by building</span>
             </div>
           </motion.div>
 
-          <div className="absolute bottom-0 left-0 right-0 footer-line" />
+          <a className="scroll-cue" href="#about">
+            <span>SCROLL TO EXPLORE</span>
+            <span className="scroll-cue-line" aria-hidden="true" />
+          </a>
         </section>
 
-        {/* WORK */}
-        <section id="work" className="section-wrap py-24 sm:py-32">
+        <section id="about" className="about-section section-shell section-space">
           <motion.div {...reveal}>
             <SectionHeading
-              label="01 / Selected builds"
-              title="Ideas, meet implementation."
-              detail="A few products I’m building and experimenting with. Each one is a chance to learn by shipping something real."
+              index="01"
+              label="A little about me"
+              title="Curious by default."
+              description="I enjoy the whole journey: understanding a problem, shaping the experience, connecting the systems, and making the details feel right."
             />
           </motion.div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="about-content">
+            <motion.div className="about-copy" {...reveal}>
+              <p>
+                I’m a full-stack developer who likes building things that are
+                both <strong>technically thoughtful and genuinely useful.</strong>{' '}
+                My projects span AI-assisted learning, civic technology, and
+                local commerce.
+              </p>
+              <p>
+                I’m interested in how AI changes the way we build software,
+                what decentralized systems can make possible, and how
+                security-minded thinking belongs in the design from day one.
+              </p>
+              <p>
+                I’m still learning, experimenting, and iterating. This
+                portfolio is a snapshot of that process—not a list of inflated
+                numbers.
+              </p>
+              <a
+                className="text-link"
+                href="https://github.com/redux-next"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Follow along on GitHub <ArrowUpRight aria-hidden="true" size={15} />
+              </a>
+            </motion.div>
+
+            <motion.div className="interest-list" {...reveal}>
+              <div>
+                <span className="interest-icon">
+                  <Code2 aria-hidden="true" size={18} />
+                </span>
+                <span>
+                  <strong>Full-stack engineering</strong>
+                  <small>From polished interfaces to APIs and data models.</small>
+                </span>
+              </div>
+              <div>
+                <span className="interest-icon">
+                  <BrainCircuit aria-hidden="true" size={18} />
+                </span>
+                <span>
+                  <strong>AI-powered products</strong>
+                  <small>Practical AI that makes an experience more useful.</small>
+                </span>
+              </div>
+              <div>
+                <span className="interest-icon">
+                  <Blocks aria-hidden="true" size={18} />
+                </span>
+                <span>
+                  <strong>Web3 &amp; open systems</strong>
+                  <small>Exploring decentralized apps and developer tools.</small>
+                </span>
+              </div>
+              <div>
+                <span className="interest-icon">
+                  <ShieldCheck aria-hidden="true" size={18} />
+                </span>
+                <span>
+                  <strong>Security-minded thinking</strong>
+                  <small>Considering validation and access from the start.</small>
+                </span>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="skills" className="skills-section section-space">
+          <div className="section-shell">
+            <motion.div {...reveal}>
+              <SectionHeading
+                index="02"
+                label="Tools I work with"
+                title="A flexible toolkit."
+                description="Technologies used across my projects, alongside a few areas I’m actively exploring."
+              />
+            </motion.div>
+
+            <div className="skill-grid">
+              {skillGroups.map(({ title, description, icon: Icon, items }, index) => (
+                <motion.article
+                  className="skill-group"
+                  key={title}
+                  {...reveal}
+                  transition={{
+                    ...(reveal.transition ?? {}),
+                    delay: index * 0.06,
+                  }}
+                >
+                  <div className="skill-group-heading">
+                    <span className="skill-icon">
+                      <Icon aria-hidden="true" size={18} />
+                    </span>
+                    <span>
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </span>
+                  </div>
+                  <ul>
+                    {items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" className="projects-section section-shell section-space">
+          <motion.div className="projects-heading" {...reveal}>
+            <SectionHeading
+              index="03"
+              label="Selected builds"
+              title="Ideas, meet implementation."
+              description="A few products I’m building and experimenting with—each one a chance to learn by shipping something real."
+            />
+            <a
+              className="text-link projects-github-link"
+              href="https://github.com/redux-next"
+              target="_blank"
+              rel="noreferrer"
+            >
+              More on GitHub <ArrowUpRight aria-hidden="true" size={15} />
+            </a>
+          </motion.div>
+
+          <div className="project-grid">
             {projects.map((project, index) => {
-              const Icon = project.icon;
+              const staggeredReveal = reduceMotion
+                ? reveal
+                : {
+                    ...reveal,
+                    transition: {
+                      ...reveal.transition,
+                      delay: index * 0.08,
+                    },
+                  };
 
               return (
                 <motion.article
-                  key={project.id}
-                  {...reveal}
-                  transition={{
-                    ...reveal.transition,
-                    delay: index * 0.08,
-                  }}
-                  className="project-card glass rounded-[22px] p-4 sm:p-5"
-                  style={{ '--glow': project.glow } as React.CSSProperties}
+                  className={
+                    project.featured
+                      ? 'project-card project-card--featured'
+                      : 'project-card'
+                  }
+                  key={project.number}
+                  {...staggeredReveal}
                 >
-                  <div className="project-art mb-5 flex items-center justify-center">
-                    <div className="art-orbit h-[120px] w-[240px] art-orbit-one" />
-                    <div className="art-orbit h-[145px] w-[215px] rotate-[48deg] art-orbit-two" />
-
-                    <div className="art-core flex items-center justify-center art-core-pulse">
-                      <Icon
-                        size={29}
-                        className="text-white"
-                        strokeWidth={1.5}
-                      />
+                  <ProjectArtwork project={project} />
+                  <div className="project-info">
+                    <div className="project-meta">
+                      <span>{project.category}</span>
+                      <span>/{project.number}</span>
                     </div>
-
-                    <div className="absolute left-4 top-4 flex items-center gap-2 font-mono text-[9px] tracking-[.15em] text-violet-200/65">
-                      <span>{project.id}</span>
-                      <span className="h-px w-5 bg-violet-300/30" />
-                      <span>PROJECT FILE</span>
-                    </div>
-
-                    <span className="absolute bottom-4 right-4 rounded-full border border-white/10 bg-black/20 px-2.5 py-1 font-mono text-[9px] text-[#d6c9ef]">
-                      {project.status}
-                    </span>
-                  </div>
-
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="eyebrow mb-2">{project.type}</div>
-                      <h3 className="text-xl font-bold tracking-tight">
-                        {project.name}
-                      </h3>
-                    </div>
-
+                    <h3>{project.name}</h3>
+                    <p className="project-description">{project.description}</p>
+                    <ul className="project-tags" aria-label="Technologies">
+                      {project.technologies.map((technology) => (
+                        <li key={technology}>{technology}</li>
+                      ))}
+                    </ul>
                     <a
-                      href={project.href}
+                      className="project-link"
+                      href="https://github.com/redux-next"
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`Open GitHub for ${project.name}`}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 text-[#d8c9f8] transition hover:border-violet-200/40 hover:bg-violet-300/10"
+                      aria-label={`Visit Gyanam’s GitHub profile for ${project.name} (opens in a new tab)`}
                     >
-                      <ArrowUpRight size={18} />
+                      Browse GitHub <ArrowUpRight aria-hidden="true" size={15} />
                     </a>
-                  </div>
-
-                  <p className="mt-3 min-h-[54px] text-sm leading-6 text-[#a9a1bd]">
-                    {project.description}
-                  </p>
-
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span className="pill" key={tag}>
-                        {tag}
-                      </span>
-                    ))}
                   </div>
                 </motion.article>
               );
             })}
           </div>
-
-          <p className="mt-5 text-xs leading-6 text-[#7e7695]">
-            Project links currently point to my GitHub profile. Individual
-            repository links can be added when the repos are ready to share.
+          <p className="project-note">
+            The links above open my GitHub profile; individual repositories
+            aren’t linked yet.
           </p>
         </section>
 
-        {/* ABOUT */}
-        <section
-          id="about"
-          className="border-y border-white/[.05] bg-white/[.012] py-24 sm:py-28"
-        >
-          <div className="section-wrap">
-            <motion.div {...reveal}>
-              <SectionHeading
-                label="02 / The person behind the pixels"
-                title="Curious by default."
-                detail="I enjoy the whole journey: understanding a problem, shaping the experience, connecting the systems, and making the details feel right."
-              />
-            </motion.div>
-
-            <div className="grid gap-10 lg:grid-cols-[1fr_.9fr] lg:gap-16">
-              <motion.div
-                {...reveal}
-                className="space-y-5 text-sm leading-7 text-[#aaa2bf]"
-              >
-                <p>
-                  I’m a full-stack developer who likes building things that are
-                  both{' '}
-                  <span className="text-white">
-                    technically thoughtful and genuinely useful.
-                  </span>{' '}
-My projects span AI-assisted learning, civic technology,
-and local commerce.
-                </p>
-
-                <p>
-                  Beyond shipping features, I’m interested in how AI changes
-                  the way we build software, how decentralized systems can
-                  create new kinds of products, and how good security
-                  practices belong in the design from day one.
-                </p>
-
-                <p>
-                  I’m still learning, experimenting, and iterating — this
-                  portfolio is a living snapshot of that process, not a list of
-                  inflated numbers.
-                </p>
-
-                <a
-                  href="https://github.com/redux-next"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 pt-2 text-sm font-semibold text-violet-200 hover:text-white"
-                >
-                  Follow the code <ArrowRight size={15} />
-                </a>
-              </motion.div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {capabilities.map((item, i) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <motion.div
-                      key={item.title}
-                      {...reveal}
-                      transition={{
-                        ...reveal.transition,
-                        delay: i * 0.06,
-                      }}
-                      className="glass rounded-2xl p-5"
-                    >
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-violet-300/15 bg-violet-300/[.08] text-violet-200">
-                        <Icon size={19} />
-                      </div>
-
-                      <h3 className="text-sm font-bold">{item.title}</h3>
-
-                      <p className="mt-2 text-xs leading-6 text-[#a49bb9]">
-                        {item.text}
-                      </p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* STACK */}
-        <section id="stack" className="section-wrap py-24 sm:py-32">
-          <motion.div {...reveal}>
-            <SectionHeading
-              label="03 / Tools of the trade"
-              title="A flexible toolkit."
-              detail="Technologies I use across my projects or am actively working with. The right tool depends on the problem."
-            />
-          </motion.div>
-
-          <motion.div
-            {...reveal}
-            className="glass rounded-[22px] p-5 sm:p-8"
-          >
-            <div className="mb-6 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-300/10 text-violet-200">
-                  <Layers3 size={17} />
-                </div>
-
-                <div>
-                  <div className="text-sm font-bold">Developer toolkit</div>
-                  <div className="mt-1 font-mono text-[10px] text-[#847b9e]">
-                    SELECTED TECHNOLOGIES
-                  </div>
-                </div>
-              </div>
-
-              <span className="pill">Evolving</span>
-            </div>
-
-            <div className="flex flex-wrap gap-2.5">
-              {stack.map((item, i) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/[.07] bg-white/[.025] px-3.5 py-3 text-xs text-[#d2cbe2] transition hover:border-violet-300/25 hover:bg-violet-300/[.06]"
-                >
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{
-                      background: ['#c4b5fd', '#f0abfc', '#a5b4fc'][i % 3],
-                    }}
-                  />
-                  {item}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/[.06] p-4">
-              <div className="eyebrow mb-2">01 / Frontend</div>
-              <p className="text-sm text-[#bdb5d0]">
-                Interfaces, responsive design, motion
+        <section id="contact" className="contact-section section-shell">
+          <motion.div className="contact-panel" {...reveal}>
+            <div className="contact-copy">
+              <p className="eyebrow">
+                <span>04</span> / Get in touch
               </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/[.06] p-4">
-              <div className="eyebrow mb-2">02 / Backend</div>
-              <p className="text-sm text-[#bdb5d0]">
-                APIs, auth, databases, integrations
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/[.06] p-4">
-              <div className="eyebrow mb-2">03 / Exploring</div>
-              <p className="text-sm text-[#bdb5d0]">
-                AI tooling, Web3, security
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* CONTACT */}
-        <section
-          id="contact"
-          className="section-wrap pb-24 pt-10 sm:pb-32"
-        >
-          <motion.div
-            {...reveal}
-            className="glass relative overflow-hidden rounded-[28px] px-6 py-12 text-center sm:px-12 sm:py-16"
-          >
-            <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-violet-600/15 blur-[75px]" />
-
-            <div className="relative">
-              <div className="eyebrow mb-5 inline-flex items-center gap-2">
-                <Command size={13} /> 04 / Open channel
-              </div>
-
-              <h2 className="mx-auto max-w-2xl text-[clamp(2.2rem,6vw,4.5rem)] font-bold leading-[1.04] tracking-[-.07em]">
-                Have an idea that’s{' '}
-                <span className="gradient-text">worth building?</span>
+              <h2>
+                Have something
+                <br />
+                <span>worth building?</span>
               </h2>
-
-              <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-[#aaa2bf]">
+              <p>
                 I’m always interested in thoughtful projects, interesting
                 technical problems, and meeting people who like to build.
               </p>
-
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <button
-                  onClick={copyEmail}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#e9ddff] px-5 py-3.5 text-sm font-bold text-[#1a1029] transition hover:bg-white"
-                >
-                  {copied ? <Check size={16} /> : <Mail size={16} />}
-                  {copied ? 'Email copied' : 'Copy contact email'}
-                </button>
-
-                <a
-                  href="https://github.com/redux-next"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[.06]"
-                >
-                  <Github size={16} /> GitHub <ArrowUpRight size={13} />
-                </a>
-              </div>
-
-              <p className="mt-4 text-[11px] text-[#827a99]">
-                Contact email is a placeholder — replace it with your real
-                public email in{' '}
-                <code className="text-violet-200">
-                  src/components/portfolio.tsx
-                </code>
-                .
-              </p>
+            </div>
+            <div className="contact-action">
+              <a
+                className="button button--primary"
+                href="https://github.com/redux-next"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Find me on GitHub <ArrowUpRight aria-hidden="true" size={16} />
+              </a>
+              <p>Or connect with me elsewhere.</p>
+              <SocialLinks compact />
             </div>
           </motion.div>
         </section>
       </main>
 
-      {/* FOOTER */}
-      <footer className="section-wrap pb-8">
-        <div className="footer-line mb-6" />
-
-        <div className="flex flex-col items-center justify-between gap-3 text-center text-[11px] text-[#827a99] sm:flex-row sm:text-left">
-          <a
-            href="#home"
-            className="font-bold tracking-tight text-[#cfc5e5]"
-          >
-            gyanam<span className="text-violet-300">.dev</span>
-          </a>
-
-          <span>Designed in the cosmos. Built with curiosity.</span>
-
-          <span>© 2026 Gyanam</span>
-        </div>
+      <footer className="site-footer section-shell">
+        <a href="#home" className="wordmark" aria-label="Gyanam — back to top">
+          gyanam<span>.</span>
+        </a>
+        <p>Made with curiosity.</p>
+        <SocialLinks compact />
+        <span className="copyright">© {new Date().getFullYear()} Gyanam</span>
+        <a className="back-to-top" href="#home" aria-label="Back to top">
+          <ArrowUp aria-hidden="true" size={16} />
+        </a>
       </footer>
     </>
   );

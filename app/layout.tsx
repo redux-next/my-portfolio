@@ -3,28 +3,39 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Gyanam — Developer, building at the edge of the web',
+  title: 'Gyanam — Full-stack developer',
   description:
-    'Portfolio of Gyanam, a full-stack developer exploring the intersection of useful software, AI, and the decentralized web.',
-  applicationName: 'Gyanam Portfolio',
+    'Gyanam is a full-stack developer exploring the modern web, AI, and Web3 through thoughtful digital products.',
+  applicationName: 'Gyanam',
   keywords: [
     'Gyanam',
     'Full-stack developer',
-    'Web3',
     'Next.js',
     'AI',
     'TypeScript',
+    'Web development',
+    'Web3',
   ],
+  authors: [{ name: 'Gyanam', url: 'https://github.com/redux-next' }],
+  creator: 'Gyanam',
   openGraph: {
-    title: 'Gyanam — Digital systems, built with intent',
+    title: 'Gyanam — Full-stack developer',
     description:
-      'Full-stack development • AI experiments • Web3 curiosity',
+      'Thoughtful digital products, modern web development, AI, and Web3.',
     type: 'website',
+    siteName: 'Gyanam',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Gyanam — Full-stack developer',
+    description:
+      'Thoughtful digital products, modern web development, AI, and Web3.',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#080611',
+  themeColor: '#100f17',
   width: 'device-width',
   initialScale: 1,
 };
